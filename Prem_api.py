@@ -36,9 +36,16 @@ shots INT,
 sog INT
 );''')
 
+
+#authentication
+token = os.getenv("TOKEN")
+headers = {
+    "Authorization": f"Bearer {token}"
+    }
+
 conn = http.client.HTTPSConnection("api.sportmonks.com/v3/football")
-url = "https://api.sportmonks.com/v3/football/teams/seasons/28275?api_token=4v7mGOO6jYklc1EB04AkIoyCw9jjLeaRZ5j5D7RsHiNyVzK6LYFrkS2m6COv"
-response = requests.request("GET", url)
+url = "https://api.sportmonks.com/v3/football/teams/seasons/28275?"
+response = requests.request("GET", url, params={"api_token":token})
 data = response.json()
 teams = data["data"]
 for team_data in teams:
@@ -50,8 +57,8 @@ for team_data in teams:
 
 page = 1
 while True:
-    url = f"https://api.sportmonks.com/v3/football/fixtures/?api_token=4v7mGOO6jYklc1EB04AkIoyCw9jjLeaRZ5j5D7RsHiNyVzK6LYFrkS2m6COv&order=desc&filters=fixtureSeasons:28275&page={page}"
-    response = requests.request("GET", url)
+    url = f"https://api.sportmonks.com/v3/football/fixtures?order=desc&filters=fixtureSeasons:28275&page={page}"
+    response = requests.request("GET", url, params={"api_token":token})
     data = response.json()
     fixtures = data["data"]
     for fix_data in fixtures:
@@ -67,8 +74,8 @@ while True:
     page += 1
 team_ids = [team["id"] for team in teams]
 for team_id in team_ids:
-    url = f"https://api.sportmonks.com/v3/football/fixtures/between/2026-07-31/2026-12-06/{team_id}?api_token=4v7mGOO6jYklc1EB04AkIoyCw9jjLeaRZ5j5D7RsHiNyVzK6LYFrkS2m6COv&include=statistics.type"
-    response = requests.request("GET", url)
+    url = f"https://api.sportmonks.com/v3/football/fixtures/between/2026-07-31/2026-12-06/{team_id}?include=statistics.type"
+    response = requests.request("GET", url, params={"api_token":token})
     data = response.json()
     fixtures = data["data"]
     for fixture in fixtures:
