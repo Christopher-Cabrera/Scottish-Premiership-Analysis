@@ -30,12 +30,30 @@ def get_recent_fixtures(name):
     WHERE name LIKE ?
         AND result IS NOT NULL
     ORDER by date DESC
-    LIMIT 10;"""
+    LIMIT 10;
+    """
     with sqlite3.connect(db_path) as conn:
         df = pd.read_sql_query(query,conn,params=(f"%{name}%",))
     return df
 
-name = "Dundee United"
+name = "Motherwell"
 fixtures = get_recent_fixtures(name)
+fixture_df = fixtures
 print(fixtures)
 
+
+fix_ids = fixture_df["fix_id"].iloc[:10].tolist()
+print(fix_ids)
+def rec_fix_stats(fix_ids):
+    query = """
+    SELECT *
+    FROM statistics
+    WHERE fixture_id in ({})
+    ORDER by fixture_date DESC;
+    """ .format(",".join("?" for _ in fix_ids))
+    with sqlite3.connect(db_path) as conn:
+        df_2 = pd.read_sql_query(query, conn, params=(fix_ids))
+    return df_2
+
+recent_stats = rec_fix_stats(fix_ids)
+print(recent_stats)
